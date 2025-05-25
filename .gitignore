@@ -1,0 +1,8 @@
+__pycache__/
+myenv/
+*.pyc
+*.log
+*.tmp
+*.DS_Store
+client_data/
+data/
