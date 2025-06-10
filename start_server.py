@@ -1,14 +1,30 @@
 import flwr as fl
 import json
-from server import CustomClientManager, FedAvgStrategy
+from server import CustomClientManager, FedAvgStrategy, FedProxStrategy, SCAFFOLDStrategy
+import argparse
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--algorithm", type=str, default="fedavg",
+                       choices=["fedavg", "fedprox", "scaffold"],
+                       help="FL algorithm to use")
+    parser.add_argument("--mu", type=float, default=0.1,
+                       help="Proximal term coefficient for FedProx")
+    args = parser.parse_args()
+    
     client_manager = CustomClientManager()
-    strategy = FedAvgStrategy()
+    
+    # Select strategy based on algorithm
+    if args.algorithm == "fedavg":
+        strategy = FedAvgStrategy()
+    elif args.algorithm == "fedprox":
+        strategy = FedProxStrategy(mu=args.mu)
+    elif args.algorithm == "scaffold":
+        strategy = SCAFFOLDStrategy()
     
     history = fl.server.start_server(
         server_address="localhost:8080",
-        config=fl.server.ServerConfig(num_rounds=30),
+        config=fl.server.ServerConfig(num_rounds=50),
         strategy=strategy,
         client_manager=client_manager
     )
@@ -18,7 +34,7 @@ def main():
         "metrics_distributed_fit": history.metrics_distributed_fit,
         "metrics_distributed": history.metrics_distributed
     }
-    with open("fl_results.json", "w") as f:
+    with open(f"results_{args.algorithm}.json", "w") as f:
         json.dump(results, f)
 
 if __name__ == "__main__":

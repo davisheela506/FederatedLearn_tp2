@@ -1,0 +1,10 @@
+SEED = 42
+NUM_ROUNDS = 2
+NUM_CLIENTS = 10
+EPOCHS = 3
+ALPHA_DIRICHLET = 1.0
+BATCH_SIZE = 64
+LEARNING_RATE = 0.01
+DATA_DIR = "distributed_data"
+FEDPROX_MU = 0.1  # Proximal term coefficient for FedProx
+USE_BN = False
